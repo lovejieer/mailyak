@@ -18,15 +18,25 @@ import "mime"
 //	mail.To(tos...)
 func (m *MailYak) To(addrs ...string) {
 	m.toAddrs = []string{}
-
 	for _, addr := range addrs {
 		trimmed := m.trimRegex.ReplaceAllString(addr, "")
 		if trimmed == "" {
 			continue
 		}
-
 		m.toAddrs = append(m.toAddrs, trimmed)
 	}
+}
+
+func (m *MailYak) Xsender(addr string) {
+	m.xsender = m.trimRegex.ReplaceAllString(addr, "")
+
+}
+
+
+
+func (m *MailYak) Xreceiver(addr string) {
+	m.xreceiver = m.trimRegex.ReplaceAllString(addr, "")
+
 }
 
 // Bcc sets a list of blind carbon copy (BCC) addresses.
@@ -43,18 +53,7 @@ func (m *MailYak) To(addrs ...string) {
 //	}
 //
 // 	mail.Bcc(bccs...)
-func (m *MailYak) Bcc(addrs ...string) {
-	m.bccAddrs = []string{}
 
-	for _, addr := range addrs {
-		trimmed := m.trimRegex.ReplaceAllString(addr, "")
-		if trimmed == "" {
-			continue
-		}
-
-		m.bccAddrs = append(m.bccAddrs, trimmed)
-	}
-}
 
 // WriteBccHeader writes the BCC header to the MIME body when true. Defaults to
 // false.
@@ -91,18 +90,7 @@ func (m *MailYak) WriteBccHeader(shouldWrite bool) {
 //	}
 //
 // 	mail.Cc(ccs...)
-func (m *MailYak) Cc(addrs ...string) {
-	m.ccAddrs = []string{}
 
-	for _, addr := range addrs {
-		trimmed := m.trimRegex.ReplaceAllString(addr, "")
-		if trimmed == "" {
-			continue
-		}
-
-		m.ccAddrs = append(m.ccAddrs, trimmed)
-	}
-}
 
 // From sets the sender email address.
 //
@@ -144,4 +132,8 @@ func (m *MailYak) Subject(sub string) {
 // example, BCC themselves in a password reset email to a different user.
 func (m *MailYak) AddHeader(name, value string) {
 	m.headers[m.trimRegex.ReplaceAllString(name, "")] = mime.QEncoding.Encode("UTF-8", m.trimRegex.ReplaceAllString(value, ""))
+}
+
+func (m *MailYak) AddCleanHeader(name, value string) {
+	m.headers[m.trimRegex.ReplaceAllString(name, "")] = m.trimRegex.ReplaceAllString(value, "")
 }
